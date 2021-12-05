@@ -1,0 +1,8 @@
+.vscode/
+build/
+test/
+objects/
+map_textures/
+*.json
+.DS_Store
+*.png
