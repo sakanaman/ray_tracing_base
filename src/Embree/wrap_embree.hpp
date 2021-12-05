@@ -30,9 +30,9 @@ EmbreeManager::~EmbreeManager()
 }
 
 
-
+template <class INTEGER>
 void LoadScene2Embree(const std::vector<float>& mesh_vertices, 
-                      const std::vector<size_t>& mesh_indices,
+                      const std::vector<INTEGER>& mesh_indices,
                       EmbreeManager* emb)
 {
     RTCGeometry geom = rtcNewGeometry(emb->device, RTC_GEOMETRY_TYPE_TRIANGLE);
@@ -56,7 +56,7 @@ void LoadScene2Embree(const std::vector<float>& mesh_vertices,
 
     for(int i = 0; i < mesh_indices.size(); ++i)
     {
-        indices[i] = mesh_indices[i];
+        indices[i] = static_cast<unsigned>(mesh_indices[i]);
     }
 
     rtcCommitGeometry(geom);
@@ -66,12 +66,13 @@ void LoadScene2Embree(const std::vector<float>& mesh_vertices,
     rtcCommitScene(emb->scene);
 }
 
+template<class Real>
 struct IsectInfo
 {
     size_t primID;
 
-    Vec3<float> Ng;
-    Vec3<float> hitPos;
+    Vec3<Real> Ng;
+    Vec3<Real> hitPos;
 
     float tfar;
     float u;
@@ -79,7 +80,8 @@ struct IsectInfo
 };
 
 
-bool intersect(const Vec3<float>& raypos, const Vec3<float>& raydir, EmbreeManager& embman, IsectInfo& isect)
+template<class Real>
+bool intersect(const Vec3<Real>& raypos, const Vec3<Real>& raydir, const EmbreeManager& embman, IsectInfo<Real>& isect)
 {
     struct RTCIntersectContext context;
     rtcInitIntersectContext(&context);
