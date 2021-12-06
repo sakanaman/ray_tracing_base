@@ -79,7 +79,7 @@ struct IsectInfo
     float v;
 };
 
-constexpr float RAYMIN = 1e-5;
+constexpr float RAYMIN = 1e-3;
 constexpr float RAYMAX = std::numeric_limits<float>::infinity();
 
 template<class Real>

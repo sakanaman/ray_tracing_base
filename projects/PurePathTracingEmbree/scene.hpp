@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <iostream>
-
+#include <sstream>
 
 #define TINYOBJLOADER_IMPLEMENTATION 
 #include <tiny_obj_loader.h>
@@ -207,6 +207,19 @@ void LoadObj_Single_Object(OBJloader& loader, std::vector<float>& vertices, std:
         scenedata.mat_infos.transmits[3 * i + 0] = loader.materials[i].transmittance[0];
         scenedata.mat_infos.transmits[3 * i + 1] = loader.materials[i].transmittance[1];
         scenedata.mat_infos.transmits[3 * i + 2] = loader.materials[i].transmittance[2];
+
+        // user
+        auto it = loader.materials[i].unknown_parameter.find("user-defined-param");
+        if(it != loader.materials[i].unknown_parameter.end())
+        {
+            std::stringstream ss(it->second);
+            std::string tmp_s;
+            std::vector<float> v;
+            while(std::getline(ss, tmp_s, ' '))
+            {
+                v.push_back(std::stof(tmp_s));
+            }
+        }
 
         //ior
         scenedata.mat_infos.nis[i] = loader.materials[i].ior;

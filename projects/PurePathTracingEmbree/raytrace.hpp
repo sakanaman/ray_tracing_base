@@ -158,24 +158,23 @@ Vec3<float> Trace_debug(const float* firstRay_dir, const float* firstRay_origin,
                                (n[1] + 1)*0.5f,
                                (n[2] + 1)*0.5f};
 
-
-        // Vec3<float> shadowdir = light_dir;
-        // Vec3<float> shadoworigin  =  hitPos /*+ shadowdir * float(1e-3)*/;
-        // embree::IsectInfo<float> shadow_hit;
-        // if(embree::intersect<float>(shadoworigin, shadowdir, 
-        //                             embree::RAYMIN, embree::RAYMAX,
-        //                             emb, shadow_hit))
-        // {
-        //     if(shadow_hit.primID == hit.primID) //oh..self intersection...
-        //     {
-        //         return {1.0f, 0.0f, 0.0f};
-        //     }
-        //     return {1.0, 
-        //             1.0,
-        //             1.0};
-        // }
-        // return {1.0, 1.0, 1.0};
-        return norm_color * norm_color;
+        Vec3<float> shadowdir = light_dir;
+        Vec3<float> shadoworigin  =  hitPos /*+ shadowdir * float(1e-3)*/;
+        embree::IsectInfo<float> shadow_hit;
+        if(embree::intersect<float>(shadoworigin, shadowdir, 
+                                    embree::RAYMIN, embree::RAYMAX,
+                                    emb, shadow_hit))
+        {
+            if(shadow_hit.primID == hit.primID) //oh..self intersection...
+            {
+                return {1.0f, 0.0f, 0.0f};
+            }
+            return {1.0, 
+                    1.0,
+                    1.0};
+        }
+        return {1.0, 1.0, 1.0};
+        // return norm_color * norm_color;
     }
     else
     {

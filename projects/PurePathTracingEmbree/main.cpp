@@ -38,7 +38,7 @@ int main()
     std::vector<float> vertices;
     std::vector<int> indices;
     SceneData<float> scenedata;
-    OBJloader load("../../../objects/debug.obj", "../../../objects");
+    OBJloader load("../../../objects/ridaisai2019.obj", "../../../objects");
     float scale = 0.5;
     LoadObj_Single_Object<int>(load, vertices, indices, scenedata,scale);
 
@@ -52,28 +52,31 @@ int main()
 
 
     //Camera
-    float theta = 80.0f * M_PI/180.0f;
-    float phi =   0.0f * M_PI/180.0f;
-    float r = 6.0f;
+    float theta = 83.0f * M_PI/180.0f;
+    float phi =   135.0f * M_PI/180.0f;
+    float r = 12.0f;
     float x = r * std::sin(theta) * std::cos(phi);
     float y = r * std::cos(theta);
     float z = r * std::sin(theta) * std::sin(phi);
 
-    float cameraPos[3] = {x, y + 2.0f, z};
-    float cameraForward[3] = {-x/r, -y/r, -z/r};
-    PinholeCamera<float> pincam(cameraPos, cameraForward);
 
 
     //Screen, Image
-    int width = 512, height = 512;
+    int width = 812, height = 512;
     float* RGB = new float[width * height * 3];
     for(int i = 0; i < width*height*3; i++)
     {
         RGB[i] = 0.0f;
     }
-    float screen_height = 2.0f;
+    float screen_height = 6.0f;
+    float screen_width = screen_height * float(width) / height;
     float pixel_size = screen_height/height;
 
+    float cameraPos[3] = {x, y + 2.0f, z};
+    float cameraForward[3] = {0.5f* screen_width * -x/r, 
+                              0.5f* screen_width * -y/r, 
+                              0.5f* screen_width * -z/r};
+    PinholeCamera<float> pincam(cameraPos, cameraForward);
 
     int samples = 100;
 
@@ -91,8 +94,8 @@ int main()
                         float v = y * pixel_size - 0.5f * pixel_size * height + pixel_size * rnd_manager.GetRND();
                         float ray_dir[3], ray_origin[3];
                         pincam.CreateFirstRay(u, v, ray_origin, ray_dir);
-                        // Vec3<float> result = Trace_Test(ray_dir, ray_origin, shader, ibl, emb, rnd_manager);
-                        Vec3<float> result = Trace_debug(ray_dir, ray_origin, ibl, emb, rnd_manager);
+                        Vec3<float> result = Trace_Test(ray_dir, ray_origin, shader, ibl, emb, rnd_manager);
+                        // Vec3<float> result = Trace_debug(ray_dir, ray_origin, ibl, emb, rnd_manager);
                         RGB[3*(width * y + x) + 0] += result[0]/samples;
                         RGB[3*(width * y + x) + 1] += result[1]/samples;
                         RGB[3*(width * y + x) + 2] += result[2]/samples;

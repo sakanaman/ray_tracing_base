@@ -284,15 +284,11 @@ Vec3<float> Trace_debug(const float* firstRay_dir, const float* firstRay_origin,
         {
             if(shadow_hit.GetID() == hit.GetID()) //oh..self intersection...
             {
-                return {0.0f, 0.0f, 0.0f};
+                return {1.0f, 0.0f, 0.0f};
             }
-            return {0.3f * norm_color[0], 
-                    0.3f * norm_color[1],
-                    0.3f * norm_color[2]};
+            return {1.0f, 1.0f, 1.0f};
         }
-        return {norm_color[0], 
-                norm_color[1],
-                norm_color[2]};
+        return {1.0f, 1.0f, 1.0f};
     }
     else
     {
