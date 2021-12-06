@@ -79,9 +79,12 @@ struct IsectInfo
     float v;
 };
 
+constexpr float RAYMIN = 1e-5;
+constexpr float RAYMAX = std::numeric_limits<float>::infinity();
 
 template<class Real>
-bool intersect(const Vec3<Real>& raypos, const Vec3<Real>& raydir, const EmbreeManager& embman, IsectInfo<Real>& isect)
+bool intersect(const Vec3<Real>& raypos, const Vec3<Real>& raydir, float raymin, float raymax,
+                const EmbreeManager& embman, IsectInfo<Real>& isect)
 {
     struct RTCIntersectContext context;
     rtcInitIntersectContext(&context);
@@ -93,8 +96,8 @@ bool intersect(const Vec3<Real>& raypos, const Vec3<Real>& raydir, const EmbreeM
     rayhit.ray.dir_x = raydir[0];
     rayhit.ray.dir_y = raydir[1];
     rayhit.ray.dir_z = raydir[2];
-    rayhit.ray.tnear = 0.0f;
-    rayhit.ray.tfar = std::numeric_limits<float>::infinity();
+    rayhit.ray.tnear = raymin;
+    rayhit.ray.tfar = raymax;
     rayhit.ray.mask = 0;
     rayhit.ray.flags = 0;
     rayhit.hit.geomID = RTC_INVALID_GEOMETRY_ID;

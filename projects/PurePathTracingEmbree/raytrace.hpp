@@ -32,7 +32,9 @@ Vec3<float> Trace_Test(const float* firstRay_dir, const float* firstRay_origin, 
     for(int depth = 0;;++depth)
     {
         embree::IsectInfo<float> isect;
-        bool is_hit = embree::intersect<float>(comingRay.origin + comingRay.dir * float(1e-3), comingRay.dir, emb, isect);
+        bool is_hit = embree::intersect<float>(comingRay.origin, comingRay.dir, 
+                                                embree::RAYMIN, embree::RAYMAX,
+                                                emb, isect);
         
         if(is_hit)
         {
@@ -63,9 +65,11 @@ Vec3<float> Trace_Test(const float* firstRay_dir, const float* firstRay_origin, 
             
             if(shadowdir.dot(orienting_normal) > 0.0f)
             {
-                Vec3<float> shadoworigin  = hitPos + shadowdir * float(1e-3) /*+ 0.001f * orienting_normal*/;
+                Vec3<float> shadoworigin  = hitPos /*+ 0.001f * orienting_normal*/;
                 embree::IsectInfo<float> shadow_hit;
-                if(embree::intersect<float>(shadoworigin, shadowdir, emb, shadow_hit))
+                if(embree::intersect<float>(shadoworigin, shadowdir, 
+                                            embree::RAYMIN, embree::RAYMAX,
+                                            emb, shadow_hit))
                 {
                     //nothing
                 }
@@ -141,7 +145,9 @@ Vec3<float> Trace_debug(const float* firstRay_dir, const float* firstRay_origin,
     Ray comingRay(firstRay_origin, firstRay_dir);
 
     embree::IsectInfo<float> hit;
-    bool is_hit = embree::intersect(comingRay.origin, comingRay.dir, emb, hit);
+    bool is_hit = embree::intersect(comingRay.origin, comingRay.dir, 
+                                    embree::RAYMIN, embree::RAYMAX,
+                                    emb, hit);
 
     if(is_hit)
     {
@@ -153,21 +159,23 @@ Vec3<float> Trace_debug(const float* firstRay_dir, const float* firstRay_origin,
                                (n[2] + 1)*0.5f};
 
 
-        Vec3<float> shadowdir = light_dir;
-        Vec3<float> shadoworigin  =  hitPos /*+ shadowdir * float(1e-3)*/;
-        embree::IsectInfo<float> shadow_hit;
-        if(embree::intersect<float>(shadoworigin, shadowdir, emb, shadow_hit))
-        {
-            if(shadow_hit.primID == hit.primID) //oh..self intersection...
-            {
-                return {1.0f, 0.0f, 0.0f};
-            }
-            return {1.0, 
-                    1.0,
-                    1.0};
-        }
-        return {1.0, 1.0, 1.0};
-        // return norm_color * norm_color;
+        // Vec3<float> shadowdir = light_dir;
+        // Vec3<float> shadoworigin  =  hitPos /*+ shadowdir * float(1e-3)*/;
+        // embree::IsectInfo<float> shadow_hit;
+        // if(embree::intersect<float>(shadoworigin, shadowdir, 
+        //                             embree::RAYMIN, embree::RAYMAX,
+        //                             emb, shadow_hit))
+        // {
+        //     if(shadow_hit.primID == hit.primID) //oh..self intersection...
+        //     {
+        //         return {1.0f, 0.0f, 0.0f};
+        //     }
+        //     return {1.0, 
+        //             1.0,
+        //             1.0};
+        // }
+        // return {1.0, 1.0, 1.0};
+        return norm_color * norm_color;
     }
     else
     {
