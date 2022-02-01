@@ -1,11 +1,5 @@
 #include "concurrent.hpp"
 
-RandomManager::RandomManager(){}
-
-float RandomManager::GetRND()
-{
-    return rnd_class.rnd();
-}
 
 ParallelRender::ParallelRender(const std::function<void(const int*, const int*, RandomManager&)>& _render):count(0),render(_render){}
 
@@ -48,14 +42,14 @@ void ParallelRender::Execute(const int width, const int height, const int split_
                         bottom_right[0] = w[i + 1];
                         bottom_right[1] = h[j + 1];
                         ++count;
-                        fprintf(stderr, "\r[%3d]", int(100 * count / (split_num * split_num))); 
+                        fprintf(stderr, "\rprogress: [%3d/100]", int(100 * count / (split_num * split_num))); 
                         have_task = true;
                     }
                 }
                 if(!have_task)
                 {
                     auto this_thread = std::this_thread::get_id();
-                    std::cout << "finish: thread[" << this_thread << "]" << std::endl;
+                    std::cout << "\nfinish: thread[" << this_thread << "]" << std::endl;
                     return;
                 }
                 render(upper_left, bottom_right, rnd_manager);
@@ -76,5 +70,4 @@ void ParallelRender::Execute(const int width, const int height, const int split_
         threads[i].join();
     }
 
-    std::cout << count << std::endl;
 }

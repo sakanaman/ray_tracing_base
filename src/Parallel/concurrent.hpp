@@ -9,14 +9,6 @@
 #include <iostream>
 #include "random.hpp"
 
-class RandomManager
-{
-public:
-    RandomManager();
-    float GetRND();
-private:
-    pcg32_random_t rnd_class;
-};
 
 //task allocate with tile splitt
 class ParallelRender

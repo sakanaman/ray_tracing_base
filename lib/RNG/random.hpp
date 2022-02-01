@@ -15,4 +15,13 @@ private:
     uint64_t inc;
 };
 
+class RandomManager
+{
+public:
+    RandomManager();
+    float GetRND();
+private:
+    pcg32_random_t rnd_class;
+};
+
 #endif

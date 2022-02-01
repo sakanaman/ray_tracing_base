@@ -1,9 +1,10 @@
 #include "random.hpp"
+#include <thread>
 #include <iostream>
 
 pcg32_random_t::pcg32_random_t()
 {
-    std::cout << "random setting start" << std::endl;
+    std::cout << "ramdom set: thread[" << std::this_thread::get_id() << "]" << std::endl;
     //initial seed setting
     std::random_device dev_rnd;
     uint64_t initstate = dev_rnd();
@@ -15,7 +16,6 @@ pcg32_random_t::pcg32_random_t()
     rnd_integer();
     state += initstate;
     rnd_integer();
-    std::cout << "random setting fisish" << std::endl;
 }
 
 uint32_t pcg32_random_t::rnd_integer()
@@ -32,4 +32,11 @@ uint32_t pcg32_random_t::rnd_integer()
 float pcg32_random_t::rnd()
 {
     return std::ldexp(rnd_integer(), -32);
+}
+
+RandomManager::RandomManager(){}
+
+float RandomManager::GetRND()
+{
+    return rnd_class.rnd();
 }

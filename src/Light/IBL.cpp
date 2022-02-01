@@ -5,11 +5,9 @@
 IBL::IBL(std::string _filename):name(_filename){
     std::cout << "Load IBL: " << name.c_str() << std::endl;
     data = stbi_loadf(_filename.c_str(), &w, &h, &channel, 0);
-    std::cout << channel << std::endl;
     if(data){   
         std::cout << "load success!!" << std::endl;
     }
-    std::cout << "data[0]" << data[13] << std::endl;
 
     std::cout << "Make IBL sampler" << std::endl;
     PVDists = std::vector<std::vector<float>>(w, std::vector<float>(h));

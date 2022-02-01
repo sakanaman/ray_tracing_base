@@ -28,7 +28,7 @@ void SaveImage(const float *rgb, int width, int height)  // To PNG
 
 
 
-int main()
+int main(int argc, char** argv)
 {
     //shape
     std::vector<float> vertices;
@@ -76,7 +76,8 @@ int main()
                               0.5f* screen_width * -z/r};
     PinholeCamera<float> pincam(cameraPos, cameraForward);
 
-    int samples = 100;
+    int samples = std::stof(argv[1]);
+    printf("spp: %d\n", samples);
 
     //Rendering
     std::function<void(const int*, const int*, RandomManager&)> render = 
