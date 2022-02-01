@@ -7,7 +7,8 @@ PRIVATE ${CMAKE_SOURCE_DIR}/ext/tinyobjloader
     PRIVATE ${CMAKE_SOURCE_DIR}/src/Embree
     PRIVATE ${CMAKE_SOURCE_DIR}/src/Light
     PRIVATE ${CMAKE_SOURCE_DIR}/ext/stb
-    PRIVATE ${CMAKE_SOURCE_DIR}/lib/Math)
+    PRIVATE ${CMAKE_SOURCE_DIR}/lib/Math
+    PRIVATE ${CMAKE_SOURCE_DIR}/src/Texture)
 target_link_libraries(path_tracing_test_embree 
                                             stb_image_write 
                                             Camera 
@@ -18,4 +19,5 @@ target_link_libraries(path_tracing_test_embree
                                             embree_intersector
                                             tinyobjloader
                                             stb_image
-                                            Threads::Threads)
+                                            Threads::Threads
+                                            texture)

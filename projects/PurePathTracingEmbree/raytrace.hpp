@@ -22,8 +22,8 @@ public:
     Vec3<float> dir;
 };
 
-Vec3<float> Trace_Test(const float* firstRay_dir, const float* firstRay_origin, const Shader<float>& shader, const IBL& ibl,
-                       const embree::EmbreeManager& emb, RandomManager& rnd_manager)
+Vec3<float> Trace_Test(const float* firstRay_dir, const float* firstRay_origin, const Shader<float>& shader,
+                       const embree::EmbreeManager& emb, RandomManager& rnd_manager, const SceneData<float>& scenedata)
 {
     Vec3<float> throughput(1.0f, 1.0f, 1.0f);
     Vec3<float> I(0.0f, 0.0f, 0.0f);
@@ -54,7 +54,7 @@ Vec3<float> Trace_Test(const float* firstRay_dir, const float* firstRay_origin, 
             float phi, theta;
             float Le[3] = {0.0f, 0.0f, 0.0f};
             float r1 = rnd_manager.GetRND(), r2 = rnd_manager.GetRND();
-            float nee_pdf = ibl.sample(r1, r2, &phi, &theta, Le);
+            float nee_pdf = scenedata.ibl.sample(r1, r2, &phi, &theta, Le);
 
             Vec3<float> shadowdir = {std::sin(theta) * std::cos(phi),
                                      std::cos(theta),
@@ -76,19 +76,19 @@ Vec3<float> Trace_Test(const float* firstRay_dir, const float* firstRay_origin, 
                 else
                 {
                     float costerm = local_shadowdir[1];
-                    I = I + throughput * eval_bsdf(local_shadowdir, local_wo, isect, shader) 
+                    I = I + throughput * eval_bsdf(local_shadowdir, local_wo, isect, shader, scenedata) 
                                        * (1.0f/nee_pdf) * costerm * Vec3<float>(Le);
                 }
             }
             #endif
 
-            Vec3<float> local_wi = sample(local_wo, isect, rnd_manager, shader);
+            Vec3<float> local_wi = sample(local_wo, isect, rnd_manager, shader, scenedata);
             Vec3<float> wi = local_wi[0]*e0 + 
                              local_wi[1]*orienting_normal + 
                              local_wi[2]*e2;
             comingRay = Ray(hitPos /*+ 0.001f * orienting_normal*/, wi);
 
-            throughput = throughput * weight(local_wi, local_wo, isect, shader);
+            throughput = throughput * weight(local_wi, local_wo, isect, shader, scenedata);
 
             Pr *= 0.96;
             if(rnd_manager.GetRND() < Pr)
@@ -113,7 +113,7 @@ Vec3<float> Trace_Test(const float* firstRay_dir, const float* firstRay_origin, 
                     phi -= 2 * M_PI;
 
                 float Le[3];
-                ibl.GetLe(Le, theta, phi);
+                scenedata.ibl.GetLe(Le, theta, phi);
                 I = I + throughput * Vec3<float>(Le);
             }
             #else
@@ -125,7 +125,7 @@ Vec3<float> Trace_Test(const float* firstRay_dir, const float* firstRay_origin, 
                     phi -= 2 * M_PI;
 
                 float Le[3];
-                ibl.GetLe(Le, theta, phi);
+                scenedata.ibl.GetLe(Le, theta, phi);
                 I = I + throughput * Vec3<float>(Le);
             #endif
             break;
@@ -135,7 +135,7 @@ Vec3<float> Trace_Test(const float* firstRay_dir, const float* firstRay_origin, 
 }
 
 
-Vec3<float> Trace_debug(const float* firstRay_dir, const float* firstRay_origin, const IBL& ibl,
+Vec3<float> Trace_debug(const float* firstRay_dir, const float* firstRay_origin,
                         const embree::EmbreeManager& emb, RandomManager& rnd_manager)
 {
     Vec3<float> light_dir = Vec3<float>(-1.0f, 2.0f, 0.0f).normalize();

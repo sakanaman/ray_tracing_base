@@ -9,6 +9,7 @@ class IBL
 {
 public:
     IBL(std::string _filename);
+    IBL(){};
     void xy2uv(const int x, const int y, float* u, float* v) const;
     void uv2xy(int* x, int* y, const float u, const float v) const;
     void uv2angle(const float u, const float v, float* theta, float* phi) const;

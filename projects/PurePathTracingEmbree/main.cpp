@@ -2,7 +2,6 @@
 #include "raytrace.hpp"
 #include "stb_image_write.h"
 #include <camera.hpp>
-#include <IBL.hpp>
 #include <wrap_embree.hpp>
 
 float gamma(float x)
@@ -31,9 +30,6 @@ void SaveImage(const float *rgb, int width, int height)  // To PNG
 
 int main()
 {
-    //IBL
-    IBL ibl("../../../map_textures/PaperMill_E_3k.hdr");
-
     //shape
     std::vector<float> vertices;
     std::vector<int> indices;
@@ -42,9 +38,11 @@ int main()
     float scale = 0.5;
     LoadObj_Single_Object<int>(load, vertices, indices, scenedata,scale);
 
+    LoadIBL("../../../map_textures/PaperMill_E_3k.hdr", scenedata);
+
 
     //Shader
-    Shader<float> shader = DiffuseShader<float>{scenedata};
+    Shader<float> shader = DiffuseShader<float>();
 
     //Embree
     embree::EmbreeManager emb;
@@ -94,8 +92,8 @@ int main()
                         float v = y * pixel_size - 0.5f * pixel_size * height + pixel_size * rnd_manager.GetRND();
                         float ray_dir[3], ray_origin[3];
                         pincam.CreateFirstRay(u, v, ray_origin, ray_dir);
-                        Vec3<float> result = Trace_Test(ray_dir, ray_origin, shader, ibl, emb, rnd_manager);
-                        // Vec3<float> result = Trace_debug(ray_dir, ray_origin, ibl, emb, rnd_manager);
+                        Vec3<float> result = Trace_Test(ray_dir, ray_origin, shader, emb, rnd_manager, scenedata);
+                        // Vec3<float> result = Trace_debug(ray_dir, ray_origin, emb, rnd_manager);
                         RGB[3*(width * y + x) + 0] += result[0]/samples;
                         RGB[3*(width * y + x) + 1] += result[1]/samples;
                         RGB[3*(width * y + x) + 2] += result[2]/samples;
