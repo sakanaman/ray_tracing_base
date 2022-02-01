@@ -40,9 +40,35 @@ public:
                         const SceneData<float>& scenedata) const
     {
         int geomID = isect.primID;
-        Vec3<Real> albedo{scenedata.mat_infos.diffuses[3 * scenedata.mat_infos.mat_indices[geomID] + 0],
-                          scenedata.mat_infos.diffuses[3 * scenedata.mat_infos.mat_indices[geomID] + 1],
-                          scenedata.mat_infos.diffuses[3 * scenedata.mat_infos.mat_indices[geomID] + 2]};
+        Vec3<Real> albedo;
+        bool exist_texture = scenedata.mat_infos.albedo_textures[scenedata.mat_infos.mat_indices[geomID]].exist();
+        if(exist_texture)
+        {
+           float u = isect.u;
+           float v = isect.v;
+
+           int uv_index0 = scenedata.vertex_infos.uv_indices[3 * geomID + 0]; 
+           int uv_index1 = scenedata.vertex_infos.uv_indices[3 * geomID + 1]; 
+           int uv_index2 = scenedata.vertex_infos.uv_indices[3 * geomID + 2]; 
+
+           float U0 = scenedata.vertex_infos.uvs[2 * uv_index0 + 0];
+           float V0 = scenedata.vertex_infos.uvs[2 * uv_index0 + 1];
+           float U1 = scenedata.vertex_infos.uvs[2 * uv_index1 + 0];
+           float V1 = scenedata.vertex_infos.uvs[2 * uv_index1 + 1];
+           float U2 = scenedata.vertex_infos.uvs[2 * uv_index2 + 0];
+           float V2 = scenedata.vertex_infos.uvs[2 * uv_index2 + 1];
+
+           float U = u * (U1 - U0) + v * (U2 - U0);
+           float V = u * (V1 - V0) + v * (V2 - V0);
+
+           scenedata.mat_infos.albedo_textures[scenedata.mat_infos.mat_indices[geomID]].getColor(U, V, &(albedo[0]), &(albedo[1]), &(albedo[2]));
+        }
+        else
+        {
+            albedo = {scenedata.mat_infos.diffuses[3 * scenedata.mat_infos.mat_indices[geomID] + 0],
+                      scenedata.mat_infos.diffuses[3 * scenedata.mat_infos.mat_indices[geomID] + 1],
+                      scenedata.mat_infos.diffuses[3 * scenedata.mat_infos.mat_indices[geomID] + 2]};
+        }
         return eval_diffuse_bsdf(wi, wo, albedo);
     };
     Vec3<Real> weight(const Vec3<Real>& wi, const Vec3<Real>& wo, const embree::IsectInfo<Real>& isect,

@@ -2,13 +2,14 @@
 #include <cstdio>
 
 
-void Texture::LoadTexture()
+void Texture::LoadTexture(const std::string& filename)
 {
     std::printf("Load Texture: %s\n", filename.c_str());
     color = stbi_load(filename.c_str(), &width, &height, &channel, 0);
     if(color)
     {
         std::printf("Success!\n");
+        is_exist = true;
         std::printf("----> width: %d\n", width);
         std::printf("----> height: %d\n", height);
         std::printf("----> channel: %d\n", channel);

@@ -27,7 +27,7 @@ template<class Real>
 class MaterialData
 {
 public:
-    std::vector<std::optional<Texture>> albedo_textures;
+    std::vector<Texture> albedo_textures;
     std::vector<int> mat_indices;
     std::vector<Real> speculers;
     std::vector<Real> diffuses;
@@ -246,13 +246,7 @@ void LoadObj_Single_Object(OBJloader& loader, std::vector<float>& vertices, std:
         {
             std::string albedo_filename = it_albedo->second;
             printf("find: albedo_texture_filename(%s)\n", albedo_filename.c_str());
-            Texture albedo_texture(albedo_filename);
-            albedo_texture.LoadTexture();
-            scenedata.mat_infos.albedo_textures[i] = albedo_texture;
-        }
-        else
-        {
-            scenedata.mat_infos.albedo_textures[i] = std::nullopt;
+            scenedata.mat_infos.albedo_textures[i].LoadTexture(albedo_filename);
         }
 
         //ior

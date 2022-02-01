@@ -7,11 +7,12 @@
 class Texture
 {
 public:
-    Texture(const std::string& _filename):filename(_filename){}
-    void LoadTexture();
+    Texture(){}
+    void LoadTexture(const std::string& filename);
     void getColor(const float u, const float j, float* color_x, float* color_y, float* color_z) const;
+    bool exist()const{return is_exist;}
 private:
-    std::string filename; 
+    bool is_exist = false;
     int width;
     int height;
     int channel;
