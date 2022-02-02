@@ -3,6 +3,7 @@
 
 #include "material.hpp"
 #include "IBL.hpp"
+#include <cmath>
 #include <concurrent.hpp>
 #include <wrap_embree.hpp>
 
@@ -136,7 +137,7 @@ Vec3<float> Trace_Test(const float* firstRay_dir, const float* firstRay_origin, 
 
 
 Vec3<float> Trace_debug(const float* firstRay_dir, const float* firstRay_origin,
-                        const embree::EmbreeManager& emb, RandomManager& rnd_manager)
+                        const embree::EmbreeManager& emb, RandomManager& rnd_manager, const SceneData<float>& scenedata)
 {
     Vec3<float> light_dir = Vec3<float>(-1.0f, 2.0f, 0.0f).normalize();
 
@@ -158,23 +159,61 @@ Vec3<float> Trace_debug(const float* firstRay_dir, const float* firstRay_origin,
                                (n[1] + 1)*0.5f,
                                (n[2] + 1)*0.5f};
 
-        Vec3<float> shadowdir = light_dir;
-        Vec3<float> shadoworigin  =  hitPos /*+ shadowdir * float(1e-3)*/;
-        embree::IsectInfo<float> shadow_hit;
-        if(embree::intersect<float>(shadoworigin, shadowdir, 
-                                    embree::RAYMIN, embree::RAYMAX,
-                                    emb, shadow_hit))
+        // Vec3<float> shadowdir = light_dir;
+        // Vec3<float> shadoworigin  =  hitPos /*+ shadowdir * float(1e-3)*/;
+        // embree::IsectInfo<float> shadow_hit;
+        // if(embree::intersect<float>(shadoworigin, shadowdir, 
+        //                             embree::RAYMIN, embree::RAYMAX,
+        //                             emb, shadow_hit))
+        // {
+        //     if(shadow_hit.primID == hit.primID) //oh..self intersection...
+        //     {
+        //         return {1.0f, 0.0f, 0.0f};
+        //     }
+        //     return {1.0, 
+        //             1.0,
+        //             1.0};
+        // }
+        // return {1.0, 1.0, 1.0};
+        // // return norm_color * norm_color;
+
+        int geomID = hit.primID;
+        int matID = scenedata.mat_infos.mat_indices[geomID];
+        float u = hit.u;
+        float v = hit.v;
+
+        int uv_index0 = scenedata.vertex_infos.uv_indices[3 * geomID + 0]; 
+        int uv_index1 = scenedata.vertex_infos.uv_indices[3 * geomID + 1]; 
+        int uv_index2 = scenedata.vertex_infos.uv_indices[3 * geomID + 2]; 
+
+        float U0 = scenedata.vertex_infos.uvs[2 * uv_index0 + 0];
+        float V0 = scenedata.vertex_infos.uvs[2 * uv_index0 + 1];
+        float U1 = scenedata.vertex_infos.uvs[2 * uv_index1 + 0];
+        float V1 = scenedata.vertex_infos.uvs[2 * uv_index1 + 1];
+        float U2 = scenedata.vertex_infos.uvs[2 * uv_index2 + 0];
+        float V2 = scenedata.vertex_infos.uvs[2 * uv_index2 + 1];
+
+        float U = U0 + u * (U1 - U0) + v * (U2 - U0);
+        float V = V0 + u * (V1 - V0) + v * (V2 - V0);
+
+        U = std::fmod(U, 1.0); 
+        if(U < 0.0) U += 1.0;
+        V = std::fmod(V, 1.0); 
+        if(V < 0.0) V += 1.0;
+
+        Vec3<float> albedo;
+        if(scenedata.mat_infos.albedo_textures[matID].exist())
         {
-            if(shadow_hit.primID == hit.primID) //oh..self intersection...
-            {
-                return {1.0f, 0.0f, 0.0f};
-            }
-            return {1.0, 
-                    1.0,
-                    1.0};
+            scenedata.mat_infos.albedo_textures[matID].getColor(U, V, &(albedo[0]), &(albedo[1]), &(albedo[2]));
         }
-        return {1.0, 1.0, 1.0};
-        // return norm_color * norm_color;
+        else
+        {
+            albedo = {scenedata.mat_infos.diffuses[3 * matID + 0],
+                      scenedata.mat_infos.diffuses[3 * matID + 1],
+                      scenedata.mat_infos.diffuses[3 * matID + 2]};
+        }
+        return albedo;
+        // return {U, V, 0};
     }
     else
     {

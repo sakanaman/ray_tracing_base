@@ -34,12 +34,13 @@ int main(int argc, char** argv)
     std::vector<float> vertices;
     std::vector<int> indices;
     SceneData<float> scenedata;
-    OBJloader load("../../../objects/ridaisai2019.obj", "../../../objects");
-    float scale = 0.5;
+    OBJloader load("../../../objects/sponza_crytek/sponza.obj", "../../../objects/sponza_crytek");
+    float scale = 1.0;
     LoadObj_Single_Object<int>(load, vertices, indices, scenedata,scale);
 
     LoadIBL("../../../map_textures/PaperMill_E_3k.hdr", scenedata);
 
+    printf("here\n");
 
     //Shader
     Shader<float> shader = DiffuseShader<float>();
@@ -50,13 +51,16 @@ int main(int argc, char** argv)
 
 
     //Camera
-    float theta = 83.0f * M_PI/180.0f;
-    float phi =   135.0f * M_PI/180.0f;
-    float r = 12.0f;
-    float x = r * std::sin(theta) * std::cos(phi);
-    float y = r * std::cos(theta);
-    float z = r * std::sin(theta) * std::sin(phi);
+    // float theta = 83.0f * M_PI/180.0f;
+    // float phi =   135.0f * M_PI/180.0f;
+    // float r = 12.0f;
+    // float x = r * std::sin(theta) * std::cos(phi);
+    // float y = r * std::cos(theta) + 2.0f;
+    // float z = r * std::sin(theta) * std::sin(phi);
 
+    float x = -400.0;
+    float y = 100.0;
+    float z = -40.0; 
 
 
     //Screen, Image
@@ -66,14 +70,15 @@ int main(int argc, char** argv)
     {
         RGB[i] = 0.0f;
     }
-    float screen_height = 6.0f;
+    float screen_height = 3.0f;
     float screen_width = screen_height * float(width) / height;
     float pixel_size = screen_height/height;
 
-    float cameraPos[3] = {x, y + 2.0f, z};
-    float cameraForward[3] = {0.5f* screen_width * -x/r, 
-                              0.5f* screen_width * -y/r, 
-                              0.5f* screen_width * -z/r};
+    float cameraPos[3] = {x, y, z};
+    // float cameraForward[3] = {0.5f* screen_width * -x/r, 
+    //                           0.5f* screen_width * -y/r, 
+    //                           0.5f* screen_width * -z/r};
+    float cameraForward[3] = {-1.0, 0.0, 0.0};
     PinholeCamera<float> pincam(cameraPos, cameraForward);
 
     int samples = std::stof(argv[1]);
@@ -94,7 +99,7 @@ int main(int argc, char** argv)
                         float ray_dir[3], ray_origin[3];
                         pincam.CreateFirstRay(u, v, ray_origin, ray_dir);
                         Vec3<float> result = Trace_Test(ray_dir, ray_origin, shader, emb, rnd_manager, scenedata);
-                        // Vec3<float> result = Trace_debug(ray_dir, ray_origin, emb, rnd_manager);
+                        // Vec3<float> result = Trace_debug(ray_dir, ray_origin, emb, rnd_manager, scenedata);
                         RGB[3*(width * y + x) + 0] += result[0]/samples;
                         RGB[3*(width * y + x) + 1] += result[1]/samples;
                         RGB[3*(width * y + x) + 2] += result[2]/samples;

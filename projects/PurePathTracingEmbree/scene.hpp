@@ -5,6 +5,7 @@
 #include <iostream>
 #include "texture.hpp"
 #include "IBL.hpp"
+#include <algorithm>
 #include <optional>
 #include <sstream>
 
@@ -145,8 +146,9 @@ void LoadObj_Single_Object(OBJloader& loader, std::vector<float>& vertices, std:
         num_faces += static_cast<int>(loader.shapes[i].mesh.indices.size()/3);
     }
 
-
-
+    printf("ObJ INFO: faces = %d\n", num_faces);
+    printf("ObJ INFO: shapes = %lu\n", loader.shapes.size());
+    printf("ObJ INFO: materials = %lu\n", loader.materials.size());
 
     //index setting
     scenedata.vertex_infos.normal_indices.resize(num_faces * 3);
@@ -240,13 +242,20 @@ void LoadObj_Single_Object(OBJloader& loader, std::vector<float>& vertices, std:
             }
         }
 
-        // texture
-        auto it_albedo = loader.materials[i].unknown_parameter.find("albedo_texture_filename");
-        if(it_albedo != loader.materials[i].unknown_parameter.end())
+        // user(for filename) 
+        auto it_user = loader.materials[i].unknown_parameter.find("user-defined-map");
+        if(it_user != loader.materials[i].unknown_parameter.end())
         {
-            std::string albedo_filename = it_albedo->second;
-            printf("find: albedo_texture_filename(%s)\n", albedo_filename.c_str());
-            scenedata.mat_infos.albedo_textures[i].LoadTexture(albedo_filename);
+            std::string user_filename = it_user->second;
+            printf("find: user(%s)\n", user_filename.c_str());
+        } 
+
+        // texture
+        if(!loader.materials[i].diffuse_texname.empty())
+        {
+            std::string albedo_filename = loader.materials[i].diffuse_texname;
+            printf("find: map_Kd(%s)\n", albedo_filename.c_str());
+            scenedata.mat_infos.albedo_textures[i].LoadTexture(loader.mtldir + "/" + albedo_filename);
         }
 
         //ior

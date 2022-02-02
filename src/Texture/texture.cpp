@@ -25,9 +25,9 @@ Texture::~Texture()
 void Texture::getColor(const float u, const float v, float* color_x, float* color_y, float* color_z) const
 {
     int i = width * u;
-    int j = height * v;
+    int j = height * (1-v);
 
-    *color_x = color[3 * (width * j + i) + 0] / 255.0;
-    *color_y = color[3 * (width * j + i) + 1] / 255.0;
-    *color_z = color[3 * (width * j + i) + 2] / 255.0;
+    *color_x = color[channel * (width * j + i) + 0] / 255.0;
+    *color_y = color[channel * (width * j + i) + 1] / 255.0;
+    *color_z = color[channel * (width * j + i) + 2] / 255.0;
 }
