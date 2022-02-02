@@ -8,8 +8,9 @@
 class IBL
 {
 public:
-    IBL(std::string _filename);
     IBL(){};
+    ~IBL();
+    void LoadIBL(const std::string& filename);
     void xy2uv(const int x, const int y, float* u, float* v) const;
     void uv2xy(int* x, int* y, const float u, const float v) const;
     void uv2angle(const float u, const float v, float* theta, float* phi) const;
@@ -17,7 +18,7 @@ public:
     void GetLe(float* Le, const float theta, const float phi) const;
     float sample(const float r1, const float r2, float* phi, float* theta, float* Le) const;
 private:
-    std::string name;
+    bool is_exist = false;
     float* data;
     int channel;
     int w;

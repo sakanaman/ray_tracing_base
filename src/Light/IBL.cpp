@@ -2,10 +2,11 @@
 #include <iostream>
 #include <cmath>
 
-IBL::IBL(std::string _filename):name(_filename){
-    std::cout << "Load IBL: " << name.c_str() << std::endl;
-    data = stbi_loadf(_filename.c_str(), &w, &h, &channel, 0);
+void IBL::LoadIBL(const std::string& filename){
+    std::cout << "Load IBL: " << filename.c_str() << std::endl;
+    data = stbi_loadf(filename.c_str(), &w, &h, &channel, 0);
     if(data){   
+        is_exist = true;
         std::cout << "load success!!" << std::endl;
     }
 
@@ -54,7 +55,12 @@ IBL::IBL(std::string _filename):name(_filename){
             PUDists.at(x) = PUDists.at(x - 1) + PVDists.at(x).at(h - 1);
         }
     }
-    std::cout << "finish make IBL sampler" << std::endl;
+}
+
+IBL::~IBL()
+{
+    if(is_exist)
+    stbi_image_free(data);
 }
 
 void IBL::xy2uv(const int x, const int y, float* u, float* v) const 

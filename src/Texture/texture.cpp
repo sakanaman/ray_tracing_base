@@ -16,6 +16,11 @@ void Texture::LoadTexture(const std::string& filename)
     }
 }
 
+Texture::~Texture() 
+{
+    if(is_exist)
+    stbi_image_free(color);
+}
 
 void Texture::getColor(const float u, const float v, float* color_x, float* color_y, float* color_z) const
 {

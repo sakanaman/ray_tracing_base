@@ -256,7 +256,7 @@ void LoadObj_Single_Object(OBJloader& loader, std::vector<float>& vertices, std:
 
 void LoadIBL(const std::string& filename, SceneData<float>& scenedata) 
 {
-    scenedata.ibl = IBL(filename);
+    scenedata.ibl.LoadIBL(filename);
 }
 
 #endif
