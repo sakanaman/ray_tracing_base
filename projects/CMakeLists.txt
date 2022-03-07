@@ -1,2 +1,3 @@
 add_subdirectory(PurePathTracing)
 add_subdirectory(PurePathTracingEmbree)
+add_subdirectory(EmbreeBDPT)
