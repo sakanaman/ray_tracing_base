@@ -1,27 +1,7 @@
 #ifndef RAYTRACE_HPP
 #define RAYTRACE_HPP
 
-#include "material.hpp"
-#include "IBL.hpp"
-#include <cmath>
-#include <concurrent.hpp>
-#include <wrap_embree.hpp>
-
-class Ray
-{
-public:
-    Ray(){}
-    Ray(const Vec3<float>& origin, const Vec3<float>& dir)
-    :origin(origin),dir(dir){}
-    Ray(const float* _origin, const float* _dir)
-    {
-        origin = Vec3<float>(_origin);
-        dir = Vec3<float>(_dir);
-    }
-
-    Vec3<float> origin;
-    Vec3<float> dir;
-};
+#include "bdpt.hpp"
 
 Vec3<float> Trace_Test(const float* firstRay_dir, const float* firstRay_origin, const Shader<float>& shader,
                        const embree::EmbreeManager& emb, RandomManager& rnd_manager, const SceneData<float>& scenedata)

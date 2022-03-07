@@ -84,6 +84,8 @@ int main(int argc, char** argv)
     int samples = std::stof(argv[1]);
     printf("spp: %d\n", samples);
 
+    LightImage lightimage(width, height);
+
     //Rendering
     std::function<void(const int*, const int*, RandomManager&)> render = 
         [&](const int* upper_left, const int* bottom_right, RandomManager& rnd_manager)
