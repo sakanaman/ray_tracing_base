@@ -74,8 +74,13 @@ public:
     {
         film.resize(width*height, AtomicFloat(0.0f));
     };
-    ~LightImage();
-    void add(const int i, const int j, const Vec3<float>& color);
+    ~LightImage(){};
+    void add(const int i, const int j, const Vec3<float>& color)
+    {
+        film[3 * (width * j + i) + 0].Add(color[0]);
+        film[3 * (width * j + i) + 1].Add(color[1]);
+        film[3 * (width * j + i) + 2].Add(color[2]);
+    }
 private:
     int width, height;
     std::vector<AtomicFloat> film;
@@ -106,9 +111,24 @@ public:
     {
         return vtype;
     }
-    void set_dir_next(const Vec3<float>& _w_next){w_next = _w_next;}
-    void set_dir_prev(const Vec3<float>& _w_prev){w_prev = _w_prev;}
+    Vec3<float> get_dir_next() const
+    {
+        return w_next;
+    }
+    Vec3<float> get_dir_prev() const
+    {
+        return w_prev;
+    }
+    bool get_delta() const 
+    {
+        return is_delta;
+    }
+    Vec3<float> get_position() const
+    {
+        return position;
+    }
 protected:
+    Vec3<float> position = {0.0f, 0.0f, 0.0f};
     Vec3<float> w_prev = {0.0f, 0.0f, 0.0f};
     Vec3<float> w_next = {0.0f, 0.0f, 0.0f};
     bool is_delta = false;
@@ -137,8 +157,8 @@ public:
 class Subpath
 {
 public:
-    Subpath(int maxdepth):maxdepth(maxdepth){};
-    ~Subpath();
+    Subpath(int maxdepth = 7):maxdepth(maxdepth){};
+    ~Subpath(){};
 protected:
     int maxdepth = 7;
 };

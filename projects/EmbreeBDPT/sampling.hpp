@@ -2,6 +2,7 @@
 #define SAMPLING_HPP
 
 #include "Vec.hpp"
+#include "scene.hpp"
 
 // Diffuse
 Vec3<float> randomCosineHemisphere(const float u, const float v, const Vec3<float> &n)
@@ -26,6 +27,12 @@ Vec3<float> test_randomCosineHemisphere(const float u, const float v)
     float y = std::cos(theta);
     float z = std::sin(phi) * std::sin(theta);
     return {x, y, z};
+}
+
+int choice_light(const SceneData<float>& scene, const float u)
+{
+    int result;
+    return result;
 }
 
 #endif
