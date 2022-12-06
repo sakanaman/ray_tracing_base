@@ -98,8 +98,8 @@ int main(int argc, char** argv)
                         float v = y * pixel_size - 0.5f * pixel_size * height + pixel_size * rnd_manager.GetRND();
                         float ray_dir[3], ray_origin[3];
                         pincam.CreateFirstRay(u, v, ray_origin, ray_dir);
-                        // Vec3<float> result = Trace_Test(ray_dir, ray_origin, shader, emb, rnd_manager, scenedata);
-                        Vec3<float> result = Trace_debug(ray_dir, ray_origin, emb, rnd_manager, scenedata);
+                        Vec3<float> result = Trace_Test(ray_dir, ray_origin, shader, emb, rnd_manager, scenedata);
+                        // Vec3<float> result = Trace_debug(ray_dir, ray_origin, emb, rnd_manager, scenedata);
                         RGB[3*(width * y + x) + 0] += result[0]/samples;
                         RGB[3*(width * y + x) + 1] += result[1]/samples;
                         RGB[3*(width * y + x) + 2] += result[2]/samples;

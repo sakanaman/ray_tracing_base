@@ -28,7 +28,8 @@ void SaveImage(const float *rgb, int width, int height)  // To PNG
 int main()
 {
     //IBL
-    IBL ibl("../../../map_textures/PaperMill_E_3k.hdr");
+    IBL ibl;
+    ibl.LoadIBL("../../../map_textures/PaperMill_E_3k.hdr");
 
     //shape
     std::vector<float> vertices;
@@ -73,7 +74,7 @@ int main()
     float pixel_size = screen_height/height;
 
 
-    int samples = 1;
+    int samples = 100;
 
     //Rendering
     std::function<void(const int*, const int*, RandomManager&)> render = 
@@ -89,8 +90,8 @@ int main()
                         float v = y * pixel_size - 0.5f * pixel_size * height + pixel_size * rnd_manager.GetRND();
                         float ray_dir[3], ray_origin[3];
                         pincam.CreateFirstRay(u, v, ray_origin, ray_dir);
-                        //Vec3<float> result = Trace(ray_dir, ray_origin, scenedata, ibl, bvh, rnd_manager);
-                        Vec3<float> result = Trace_debug(ray_dir, ray_origin, scenedata, ibl, bvh, rnd_manager);
+                        Vec3<float> result = Trace(ray_dir, ray_origin, scenedata, ibl, bvh, rnd_manager);
+                        // Vec3<float> result = Trace_debug(ray_dir, ray_origin, scenedata, ibl, bvh, rnd_manager);
                         RGB[3*(width * y + x) + 0] += result[0]/samples;
                         RGB[3*(width * y + x) + 1] += result[1]/samples;
                         RGB[3*(width * y + x) + 2] += result[2]/samples;
